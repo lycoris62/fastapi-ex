@@ -9,3 +9,17 @@ GET http://127.0.0.1:8000/hello/User
 Accept: application/json
 
 ###
+
+POST http://127.0.0.1:8000/todo
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id": 1,
+  "item": "Fist todo is to finish this book!"
+}
+
+###
+
+GET http://127.0.0.1:8000/todo
+Accept: application/json
