@@ -1,9 +1,9 @@
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends
-from sqlmodel import select
 
 from database.connection import get_session
+from database.connection_mongo import Database
 from models.events import Event, EventUpdate
 
 event_router = APIRouter(
@@ -12,11 +12,14 @@ event_router = APIRouter(
 
 events = []
 
+event_database = Database(Event)
+
 
 @event_router.get("/", response_model=List[Event])
 async def retrieve_all_events(session=Depends(get_session)) -> List[Event]:
-  statement = select(Event)
-  events = session.exec(statement).all()
+  # statement = select(Event)
+  # events = session.exec(statement).all()
+  events = await event_database.get_all()
   return events
 
 
@@ -34,9 +37,11 @@ async def retrieve_event(id: int, session=Depends(get_session)) -> dict:
 
 @event_router.post("/new")
 async def create_event(new_event: Event, session=Depends(get_session)) -> dict:
-  session.add(new_event)
-  session.commit()
-  session.refresh(new_event)
+  # session.add(new_event)
+  # session.commit()
+  # session.refresh(new_event)
+
+  await event_database.save(new_event)
 
   return {
     "message": "Event creted successfully."
