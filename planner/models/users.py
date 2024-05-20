@@ -36,6 +36,11 @@ class UserSignIn(BaseModel):
       }
     }
 
+
+class TokenResponse(BaseModel):
+  access_token: str
+  token_type: str
+
 # class User(BaseModel):
 #   email: EmailStr
 #   password: str

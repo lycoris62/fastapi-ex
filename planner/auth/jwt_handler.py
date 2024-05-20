@@ -4,6 +4,10 @@ from datetime import datetime
 from fastapi import HTTPException, status
 from jose import jwt, JWTError
 
+from database.connection_mongo import Settings
+
+settings = Settings()
+
 
 def create_access_token(user: str):
   payload = {
@@ -11,13 +15,13 @@ def create_access_token(user: str):
     "expires": time.time() + 3600
   }
 
-  token = jwt.encode(payload, "hellomynameisjigunicetomeetyou", algorithm="HS256")
+  token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
   return token
 
 
 def verify_access_token(token: str):
   try:
-    data = jwt.decode(token, "hellomynameisjigunicetomeetyou", algorithms=["HS256"])
+    data = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
     expire = data.get("expires")
 
     if expire is None:

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 
 from auth.hash_password import HashPassword
 from database.connection_mongo import Database
-from models.users import User, UserSignIn
+from models.users import User, TokenResponse
 
 user_router = APIRouter(
     tags=["User"]
@@ -33,16 +34,16 @@ async def sign_new_user(user: User) -> dict:
   }
 
 
-@user_router.post("/signin")
-async def sign_user_in(user: UserSignIn) -> dict:
-  user_exist = await User.find_one(User.email == user.email)
+@user_router.post("/signin", response_model=TokenResponse)
+async def sign_user_in(user: OAuth2PasswordRequestForm = Depends()) -> dict:
+  user_exist = await User.find_one(User.email == user.username)
 
   if not user_exist:
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="User does not exist"
     )
-  if user_exist.password != user.password:
+  if not hash_password.verify_hash(user.password, user_exist.password):
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Wrong credentials passed"
