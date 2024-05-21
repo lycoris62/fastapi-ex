@@ -1,0 +1,10 @@
+POST http://localhost:8000/users/signup
+Content-Type: application/json
+
+{
+  "full_name": "yunjae03",
+  "email": "yun03@naver.com",
+  "password": "!qwer1234"
+}
+
+###

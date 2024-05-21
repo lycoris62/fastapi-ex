@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from api.users.models import User
+from api.users.schemas import UserSignup
 from database.connection import get_db
 
 user_router = APIRouter(
@@ -23,6 +24,15 @@ def get_users(db: Session = Depends(get_db)):
 def get_user(id: int, db: Session = Depends(get_db)):
   user = db.query(User).get(id)
   return user
+
+
+@user_router.post("/signup")
+def signup(user: UserSignup, db: Session = Depends(get_db)):
+  db_user = User(full_name=user.full_name, email=user.email, password=user.password)
+  db.add(db_user)
+  db.commit()
+  db.refresh(db_user)
+  return db_user
 
 # @user_router.get("")
 # async def get_users(session: Annotated[AsyncSessionLocal, Depends(get_session)]):

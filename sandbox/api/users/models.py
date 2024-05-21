@@ -1,6 +1,6 @@
 from enum import Enum
 
-from sqlalchemy import Column, BigInteger, String
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 
 from database.connection import Base
@@ -13,7 +13,7 @@ class UserRole(Enum):
 class User(Base):
   __tablename__ = "users"
 
-  id = Column(BigInteger, primary_key=True, autoincrement=True)
+  id = Column(Integer, primary_key=True, autoincrement=True)
   full_name = Column(String, nullable=False, unique=True)
   email = Column(String, nullable=False, unique=True)
   password = Column(String)
