@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from starlette import status
 
 from api.users.models import User
-from api.users.schemas import UserSignup
+from api.users.schemas import UserSignup, UserLogin
 from database.connection import get_db
 
 user_router = APIRouter(
@@ -32,6 +33,19 @@ def signup(user: UserSignup, db: Session = Depends(get_db)):
   db.add(db_user)
   db.commit()
   db.refresh(db_user)
+  return db_user
+
+
+@user_router.post("/login")
+def login(user: UserLogin, db: Session = Depends(get_db)):
+  db_user = db.query(User).filter(User.email == user.email).first()
+  print("db_user", db_user)
+
+  if not db_user or db_user.password != user.password:
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="못찾음"
+    )
   return db_user
 
 # @user_router.get("")
