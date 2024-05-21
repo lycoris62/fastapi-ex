@@ -2,22 +2,17 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
 import crud
-from database.connection import engine, Base, SessionLocal
+from api.users.router import user_router
+from database.connection import engine, Base, get_db
 
 app = FastAPI()
+
+app.include_router(user_router, prefix="/users")
 
 
 @app.on_event("startup")
 def init_db():
   Base.metadata.create_all(bind=engine)
-
-
-def get_db():
-  db = SessionLocal()
-  try:
-    yield db
-  finally:
-    db.close()
 
 
 @app.get("/users")
