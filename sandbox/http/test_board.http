@@ -1,0 +1,10 @@
+POST http://localhost:8000/boards
+Content-Type: application/json
+
+{
+  "name": "board01",
+  "public": true,
+  "creator_id": 1
+}
+
+###
