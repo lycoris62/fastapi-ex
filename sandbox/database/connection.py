@@ -7,11 +7,12 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
+    echo=True,  # 로그에 SQL 문 찍힘
     connect_args={
       "check_same_thread": False  # 이 부분은 SQLite 만 필요
     })
 
-sessionLocal = sessionmaker(
+SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine
