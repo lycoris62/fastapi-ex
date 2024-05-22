@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Depends
+from fastapi_pagination import LimitOffsetPage, Params
+from fastapi_pagination.ext.sqlalchemy import paginate
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from api.posts.models import Post
@@ -11,8 +14,22 @@ post_router = APIRouter(
 
 
 @post_router.get("")
-def get_posts(db: Session = Depends(get_db)):
-  posts = db.query(Post).all()
+def get_posts(
+    db: Session = Depends(get_db),
+    params: Params = Depends()
+) -> LimitOffsetPage:
+  # print("params", params)
+  return paginate(db, select(Post), params)
+  # return paginate(db, db.query(Post), params)
+
+
+@post_router.get("/cursor")
+def get_posts_cursor(
+    db: Session = Depends(get_db),
+    cursor: int = None
+):
+  # select(Post).where(Post.id > cursor).order_by(Post.id)
+  posts = db.query(Post).filter(Post.id > cursor).all()
   return posts
 
 
