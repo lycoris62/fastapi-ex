@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
-from fastapi_pagination import LimitOffsetPage, Params
-from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlalchemy import select
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from api.posts.models import Post
@@ -16,11 +15,15 @@ post_router = APIRouter(
 @post_router.get("")
 def get_posts(
     db: Session = Depends(get_db),
-    params: Params = Depends()
-) -> LimitOffsetPage:
+    # params: Params = Depends()
+    # ) -> LimitOffsetPage:
+):
   # print("params", params)
-  return paginate(db, select(Post), params)
+  # return paginate(db, select(Post), params)
   # return paginate(db, db.query(Post), params)
+  # return db.query(Post).all()
+  json = jsonable_encoder(db.query(Post).all())
+  return JSONResponse(json)
 
 
 @post_router.get("/cursor")
