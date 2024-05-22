@@ -1,19 +1,26 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from api.posts.models import Post
 from api.posts.schemas import PostCreate
+# from auth.auth import oauth2_scheme
 from database.connection import get_db
 
 post_router = APIRouter(
     tags=["Post"]
 )
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 @post_router.get("")
 def get_posts(
+    token: Annotated[str, Depends(oauth2_scheme)],
     db: Session = Depends(get_db),
     # params: Params = Depends()
     # ) -> LimitOffsetPage:
