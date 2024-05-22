@@ -27,7 +27,7 @@ def get_user(id: int, db: Session = Depends(get_db)):
   return user
 
 
-@user_router.post("/signup", status_code=status.HTTP_201_CREATED)
+@user_router.post("/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
 def signup(user: UserSignup, db: Session = Depends(get_db)):
   db_user = User(full_name=user.full_name, email=user.email, password=user.password)
   db.add(db_user)
