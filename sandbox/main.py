@@ -1,6 +1,9 @@
 from fastapi import FastAPI, Depends
+from fastapi.exceptions import RequestValidationError
 from sqlalchemy.orm import Session
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import PlainTextResponse
 
 import crud
 from api.boards.router import board_router
@@ -26,6 +29,16 @@ app.add_middleware(
 app.include_router(user_router, prefix="/users")
 app.include_router(board_router, prefix="/boards")
 app.include_router(post_router, prefix="/posts")
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+  return PlainTextResponse("이건 검증 핸들러로 한 거지롱~~~ : " + str(exc), status_code=400)
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+  return PlainTextResponse("이건 http 핸들러로 한 거지롱~~~ : " + str(exc.detail), status_code=exc.status_code)
 
 
 @app.on_event("startup")
